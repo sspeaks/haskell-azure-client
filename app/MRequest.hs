@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs               #-}
 {-# LANGUAGE UndecidableInstances       #-}
 
 module MRequest where
@@ -32,11 +33,13 @@ newtype RequestIO a = RequestIO {
 } deriving(Functor, Applicative, Monad, MonadIO, MonadState AppState, MonadError RequestError)
 
 instance MRequest RequestIO where
+    mGet :: Text -> RequestIO (Response Text)
     mGet url = fmap (fmap LT.decodeUtf8) . liftIO . Client.get $ T.unpack url
 
 class (MRequest m) => Unwrap m where
     unwrap :: m a -> IO a
 instance Unwrap RequestIO where
+    unwrap :: RequestIO a -> IO a
     unwrap m = do
         res <-  fmap fst . flip runStateT AppState . runExceptT . unRequestIO $ m
         case res of

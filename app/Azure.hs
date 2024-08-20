@@ -1,9 +1,9 @@
 module Azure where
 
-import           Data.Text.Lazy
+import           Data.Text
 
 data CloudType = Prod | Dogfood deriving Show
 data ResourceConfig = ResourceConfig {
-      subscriptionId :: Text
-    , resourceGroup  :: Text
+      subscriptionId :: !Text
+    , resourceGroup  :: !Text
 }
